@@ -1,97 +1,135 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Voxa
 
-# Getting Started
+**AI-powered voice receptionist that handles business calls using local LLM inference.**
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+Built a full-stack voice AI system that answers phone calls, understands customer questions, and responds naturally - all without sending data to external AI APIs. Designed to help small businesses automate their front desk.
 
-## Step 1: Start Metro
+---
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## The Problem
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+Small businesses miss calls, lose customers, and can't afford 24/7 reception staff. Existing solutions are expensive, sound robotic, or require sending customer data to third-party AI services.
 
-```sh
-# Using npm
-npm start
+## The Solution
 
-# OR using Yarn
-yarn start
+Voxa is a privacy-first AI receptionist that runs inference locally:
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                                                                         │
+│   Incoming Call                                                         │
+│        │                                                                │
+│        ▼                                                                │
+│   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                │
+│   │   Twilio    │───►│   Speech    │───►│   Ollama    │                │
+│   │   Voice     │    │   to Text   │    │  (Mistral)  │                │
+│   └─────────────┘    └─────────────┘    └─────────────┘                │
+│                                               │                         │
+│                                               ▼                         │
+│   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                │
+│   │   Caller    │◄───│   Text to   │◄───│   Context   │                │
+│   │   Hears     │    │   Speech    │    │  Injection  │                │
+│   └─────────────┘    └─────────────┘    └─────────────┘                │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
-## Step 2: Build and run your app
+---
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## Technical Highlights
 
-### Android
+### Voice Pipeline
+End-to-end voice processing:
+1. **Twilio** receives incoming calls and handles telephony
+2. **Transcription** converts caller speech to text
+3. **LLM** processes the query with business context
+4. **TTS** converts the AI response back to speech
+5. **Caller** hears a natural response
 
-```sh
-# Using npm
-npm run android
+### Local LLM Inference
+- Uses **Ollama** with **Mistral 7B** for on-device inference
+- No API costs after setup
+- Customer conversations never leave your infrastructure
+- Sub-second response times
 
-# OR using Yarn
-yarn android
+### Context-Aware Responses
+Business knowledge is injected into every prompt:
+```json
+{
+  "business_name": "Mascara Beauty Salon",
+  "services": [
+    { "name": "Haircut", "price": "$45" },
+    { "name": "Facial", "price": "$65" }
+  ],
+  "hours": "Mon-Sat 9am-7pm"
+}
 ```
 
-### iOS
+The AI understands your business and responds accurately to questions about services, pricing, and hours.
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+---
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+## Tech Stack
 
-```sh
-bundle install
+| Layer | Technologies |
+|-------|-------------|
+| **Frontend** | React Native, TypeScript |
+| **Backend** | Express.js, TypeScript |
+| **Voice** | Twilio (calls, transcription, TTS) |
+| **AI** | Ollama, Mistral 7B |
+| **Mobile** | iOS, Android |
+
+---
+
+## API Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `POST /ask` | Text-based query (for testing) |
+| `POST /voice` | Twilio webhook for incoming calls |
+| `POST /handle-recording` | Processes voice recordings |
+| `POST /handle-transcription` | Handles Twilio transcriptions |
+
+---
+
+## Running Locally
+
+```bash
+git clone https://github.com/druvsarin1/Voxa.git
+cd Voxa
+
+# Install Ollama and pull Mistral
+brew install ollama
+ollama pull mistral
+
+# Backend
+cd backend
+npm install
+npm run dev  # Runs on port 3000
+
+# Frontend (separate terminal)
+cd ..
+npm install
+npm run ios  # or npm run android
 ```
 
-Then, and every time you update your native dependencies, run:
+### Configure Twilio
+1. Create a Twilio account
+2. Get a phone number
+3. Set webhook URL to your backend `/voice` endpoint
 
-```sh
-bundle exec pod install
-```
+---
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+## Skills Demonstrated
 
-```sh
-# Using npm
-npm run ios
+- **Voice AI** - Full speech-to-speech pipeline
+- **Local LLM** - Privacy-preserving inference with Ollama
+- **Telephony Integration** - Twilio webhooks and voice APIs
+- **Full-Stack TypeScript** - Type-safe frontend and backend
+- **Cross-Platform Mobile** - React Native for iOS/Android
 
-# OR using Yarn
-yarn ios
-```
+---
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+## Contact
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+**Dhruv Sarin** - [LinkedIn](https://linkedin.com/in/dhruvsarin) | [GitHub](https://github.com/druvsarin1)
