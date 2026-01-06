@@ -132,4 +132,4 @@ npm run ios  # or npm run android
 
 ## Contact
 
-**Dhruv Sarin** - [LinkedIn](https://linkedin.com/in/dhruvsarin) | [GitHub](https://github.com/druvsarin1)
+**Druv Sarin** - [LinkedIn](https://linkedin.com/in/druvsarin) | [GitHub](https://github.com/druvsarin1)
